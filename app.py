@@ -159,11 +159,10 @@ def get_uid_for_dict(dict):
 def main():
 
     load_dotenv()
-    FINTS_BANK_CODE = getenv("FINTS_BANK_CODE")
-    FINTS_LOGIN_NAME = getenv("FINTS_LOGIN_NAME")
-    FINTS_LOGIN_PIN = getenv("FINTS_LOGIN_PIN")
-    FINTS_HBCI_ENDPOINT = getenv("FINTS_HBCI_ENDPOINT")
+    FINTS_BANK_LOGINS = getenv("FINTS_BANK_LOGINS")
     FINTS_PRODUCT_ID = getenv("FINTS_PRODUCT_ID")
+
+    print(FINTS_BANK_LOGINS)
 
     DATA_PATH = getenv("DATA_PATH")
 
@@ -182,31 +181,37 @@ def main():
 
     args = parser.parse_args()
     
-    # load required arguments from enviroment vars
-    client = get_FinTS_client(
-        FINTS_BANK_CODE,
-        FINTS_LOGIN_NAME,
-        FINTS_LOGIN_PIN,
-        FINTS_HBCI_ENDPOINT,
-        FINTS_PRODUCT_ID,
-    )
+    bank_logins = json.loads(FINTS_BANK_LOGINS)
 
-    ### accounts ###
-    save_json(data=convert_objects_to_dicts(load_accounts(client))
-            , file=args.data_path + "accounts.json")
+    for bank in bank_logins:
 
-    ### balance ###
-    save_json(data=convert_objects_to_dicts(load_balances(client))
-              , file=args.data_path + "balance.json")
+        # load required arguments from enviroment vars
+        client = get_FinTS_client(
+            bank_logins[bank]["FINTS_BANK_CODE"],
+            bank_logins[bank]["FINTS_LOGIN_NAME"],
+            bank_logins[bank]["FINTS_LOGIN_PIN"],
+            bank_logins[bank]["FINTS_HBCI_ENDPOINT"],
+            FINTS_PRODUCT_ID,
+        )
 
-    ### transactions ###
-    start_date = args.start_date
+        file_prefix = f"{bank}_"
 
-    if start_date is None:
-        start_date = (datetime.datetime.now() - relativedelta(months=1)).strftime('%Y-%m-%d')
-    logging.info(f"Start date is set to {start_date}")
-    save_json(data=convert_objects_to_dicts(load_transactions(client, datetime.datetime.strptime(start_date, "%Y-%m-%d")))
-            , file=args.data_path + "transactions.json")
+        ### accounts ###
+        save_json(data=convert_objects_to_dicts(load_accounts(client))
+                , file=args.data_path + file_prefix + "accounts.json")
+
+        ### balance ###
+        save_json(data=convert_objects_to_dicts(load_balances(client))
+                , file=args.data_path + file_prefix + "balance.json")
+
+        ### transactions ###
+        start_date = args.start_date
+
+        if start_date is None:
+            start_date = (datetime.datetime.now() - relativedelta(months=1)).strftime('%Y-%m-%d')
+        logging.info(f"Start date is set to {start_date}")
+        save_json(data=convert_objects_to_dicts(load_transactions(client, datetime.datetime.strptime(start_date, "%Y-%m-%d")))
+                , file=args.data_path + file_prefix + "transactions.json")
 
 if __name__ == "__main__":
     main()

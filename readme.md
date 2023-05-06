@@ -7,14 +7,18 @@ Are the transactions older than three month, you have to enter a TAN. For the ne
 The following enviroment variables must be set via `.env`-file:
 
 ```
-FINTS_BANK_CODE
-FINTS_LOGIN_NAME
-FINTS_LOGIN_PIN
-FINTS_HBCI_ENDPOINT
 FINTS_PRODUCT_ID
+FINTS_BANK_LOGINS='{"bank_1":{"FINTS_BANK_CODE":"bank_code_1",
+                           "FINTS_LOGIN_NAME":"username_1",
+                           "FINTS_LOGIN_PIN":"pin_1",
+                           "FINTS_HBCI_ENDPOINT":"endpoint_1"},
+                    "bank_2":{"FINTS_BANK_CODE":"bank_code_2",
+                           "FINTS_LOGIN_NAME":"username_2",
+                           "FINTS_LOGIN_PIN":"pin_2",
+                           "FINTS_HBCI_ENDPOINT":"endpoint_2"}}'
 ```
-How to fill these variables look in the [documentation](https://python-fints.readthedocs.io/en/latest/quickstart.html)
-
+How to fill these variables look in the [documentation](https://python-fints.readthedocs.io/en/latest/quickstart.html). 
+The enviroment variable `FINTS_BANK_LOGINS` is a dictornary to load data from different banks.
 
 You can also set the path for the data outputs via enviroment variable:
 
