@@ -1,0 +1,4 @@
+fints==4.0.0
+flatdict==4.0.1
+python-dateutil==2.8.2
+python-dotenv==0.21.0
